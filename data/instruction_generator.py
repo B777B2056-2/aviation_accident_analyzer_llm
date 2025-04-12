@@ -76,9 +76,9 @@ class NTSBAviationReportsInstructionGenerator(object):
         self.proxy = config['global']['proxy']
       else:
         self.proxy = None
-      self.api_key = config['instruction_generator']['api_key']
-      self.base_url = config['instruction_generator']['base_url']
-      self.model = config['instruction_generator']['model']
+      self.api_key = config['instruction_generator']['open_ai']['api_key']
+      self.base_url = config['instruction_generator']['open_ai']['base_url']
+      self.model = config['instruction_generator']['open_ai']['model']
 
   def __init__(self, pdf_dir:str, dataset_dir_path:str, conf_file_path:str='config.yaml'):
     self.config = NTSBAviationReportsInstructionGenerator.Config(conf_file_path)
