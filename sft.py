@@ -72,7 +72,7 @@ def sft(lora_model, peft_conf, sft_tokenizer, num_train_epochs:int, model_path:s
   )
   trainer.train()
   # 保存模型
-  trainer.model.save_pretrained(os.path.join(model_path, "sql_generator"))
+  trainer.model.save_pretrained(model_path)
 
 
 def parse_sft_arguments():
