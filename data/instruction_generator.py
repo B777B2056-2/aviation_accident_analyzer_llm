@@ -165,7 +165,8 @@ class NTSBAviationReportsInstructionGenerator(object):
 
       with open(file_path, "r", encoding=detected_encoding) as file:
         json_data = json.load(file)
-        l.append(json_data)
+        for x in json_data:
+          l.append(x)
     with open(os.path.join(self.dataset_dir_path, "all.json"), "w", encoding="utf-8") as json_file:
       json.dump(l, json_file, ensure_ascii=False)
 

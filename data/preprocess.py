@@ -39,6 +39,6 @@ class NTSBAviationReportsInstructionDatasetBuilder(object):
 
   def train_test_split(self, test_size:float):
     """划分数据集"""
-    split_dataset = self.tokenized_dataset.train_test_split(test_size=test_size)
+    split_dataset = self.tokenized_dataset["train"].train_test_split(test_size=test_size)
     train_dataset, test_dataset = split_dataset['train'], split_dataset['test']
     return train_dataset, test_dataset
