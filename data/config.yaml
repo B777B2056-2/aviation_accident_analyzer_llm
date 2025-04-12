@@ -4,11 +4,10 @@ global:
     https: 'http://127.0.0.1:7890'
 
 ntsb_crawl:
-  max_html_page_num: 1
+  max_html_page_num: 15
 
 instruction_generator:
   open_ai:
-    api_key: ''
     base_url: 'https://api.deepseek.com'
     model: 'deepseek-chat'
 

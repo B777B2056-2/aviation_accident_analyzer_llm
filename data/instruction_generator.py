@@ -76,7 +76,7 @@ class NTSBAviationReportsInstructionGenerator(object):
         self.proxy = config['global']['proxy']
       else:
         self.proxy = None
-      self.api_key = config['instruction_generator']['open_ai']['api_key']
+      self.api_key = os.environ.get('OPEN_AI_API_KEY')
       self.base_url = config['instruction_generator']['open_ai']['base_url']
       self.model = config['instruction_generator']['open_ai']['model']
 
