@@ -92,6 +92,7 @@ class NTSBAviationReportsInstructionGenerator(object):
   def _extract_text_from_pdf_dir(self, pdf_dir:str) -> None:
     """提取pdf内容"""
     self.texts = []
+    self.file_names = []
     lock = threading.Lock()
     with ThreadPoolExecutor(max_workers=cpu_count() * 2) as t:
       tasks = []
@@ -103,11 +104,12 @@ class NTSBAviationReportsInstructionGenerator(object):
             text += page.get_text()
           with lock:
             self.texts.append(text)
+            self.file_names.append(filename)
         tasks.append(t.submit(handler, os.path.join(pdf_dir, filename)))
       wait(tasks)
 
   @staticmethod
-  def qa_generate_by_single_report(config:Config, idx:int, content:str, dataset_dir_path:str) -> None:
+  def qa_generate_by_single_report(config:Config, idx:int, cur_file_name:str, content:str, dataset_dir_path:str) -> None:
     from openai import OpenAI
     if config.proxy:
       os.environ["http_proxy"] = config.proxy['http']
@@ -122,14 +124,18 @@ class NTSBAviationReportsInstructionGenerator(object):
 
     for chunk in content_chunks:
       prompt = QUESTION_ANSWER_GENERATE_PROMPT_TEMPLATE.replace("{{air crash investigation report}}", chunk)
-      response = client.chat.completions.create(
-        model=config.model,
-        messages=[
-          {"role": "system", "content": prompt},
-          {"role": "user", "content": "concat to question-answer pairs"}
-        ],
-        stream=False
-      )
+      try:
+        response = client.chat.completions.create(
+          model=config.model,
+          messages=[
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": "concat to question-answer pairs"}
+          ],
+          stream=False
+        )
+      except Exception as e:
+        print(f"file {cur_file_name} generate failed: {e}")
+        continue
       all_answers.append(response.choices[0].message.content)
 
     # 合并所有结果
@@ -169,7 +175,7 @@ class NTSBAviationReportsInstructionGenerator(object):
       tasks = []
       for index, content in enumerate(self.texts):
         handler = NTSBAviationReportsInstructionGenerator.qa_generate_by_single_report
-        args = (self.config, index, content, self.dataset_dir_path)
+        args = (self.config, index, self.file_names[index], content, self.dataset_dir_path)
         tasks.append(t.submit(lambda p: handler(*p), args))
       wait(tasks)
       print('all tasks done')
